@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ShellExplosion : MonoBehaviour
 {
-    public LayerMask tankMask;
+    public LayerMask tankMask; //added to layer mask
     public ParticleSystem explosionParticles;
     public AudioSource explosionAudio;
     public float maxDamage = 100f;
