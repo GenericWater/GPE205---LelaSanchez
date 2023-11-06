@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8804425192506780685}
   - component: {fileID: 6277023305207029981}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: ShellExplosion (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 2605049738509115769}
   - component: {fileID: 7039139275658961908}
   - component: {fileID: 4712312059415808805}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,8 +283,8 @@ MonoBehaviour:
     m_Bits: 8
   explosionParticles: {fileID: 7667204129620538187}
   explosionAudio: {fileID: 6277023305207029981}
-  maxDamage: 100
-  explosionForce: 1000
+  maxDamage: 50
+  explosionForce: 500
   maxLifeTime: 2
   explosionRadius: 5
 --- !u!1001 &7667204129636126301
@@ -297,7 +297,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 113952, guid: f7760b038d59c4b4eaac5a7cefe85780, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 195792, guid: f7760b038d59c4b4eaac5a7cefe85780, type: 3}
       propertyPath: m_Name
@@ -305,11 +305,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 195792, guid: f7760b038d59c4b4eaac5a7cefe85780, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 199372, guid: f7760b038d59c4b4eaac5a7cefe85780, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 486730, guid: f7760b038d59c4b4eaac5a7cefe85780, type: 3}
       propertyPath: m_LocalPosition.x

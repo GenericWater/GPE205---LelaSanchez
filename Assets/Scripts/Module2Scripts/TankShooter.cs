@@ -10,13 +10,31 @@ public class TankShooter : Shooter
 
     private float fireRate;
 
+    private float timerDelay; 
+
+
 
 
     // Start is called before the first frame update
     public override void Start()
     {
+        //float shotsPerSecond;
         fireRate = gameObject.GetComponent<Pawn>().fireRate; // Gets component from Pawn Script
-        nextShootTime = Time.time + fireRate;
+        float secondsPerShot; // We will convert to shots per second
+
+
+        if (fireRate <= 0)
+        {
+            secondsPerShot = Mathf.Infinity;
+        }
+        else
+        {
+            secondsPerShot = 1 / fireRate; 
+        }
+
+        timerDelay = secondsPerShot;
+
+        nextShootTime = Time.time + timerDelay;
 
     }
 
@@ -62,9 +80,9 @@ public class TankShooter : Shooter
 
             // Destroy it after a set time
             Destroy(newShell, lifeSpan);
-            nextShootTime = Time.time + fireRate; // Add to time
+            nextShootTime = Time.time + timerDelay; // Add to time
         }
-        return;
+        //return;
 
     }
 }

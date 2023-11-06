@@ -14,6 +14,7 @@ public class PlayerController : Controller
     //Module 2 - shootKey added!
     public KeyCode shootKey;
 
+    public KeyCode respawnKey;
 
     // Start is called before the first frame update
     public override void Start()
@@ -36,11 +37,19 @@ public class PlayerController : Controller
     // Update is called once per frame
     public override void Update()
     {
+        
         // Process our Keyboard Inputs
-        ProcessInputs(); 
+        ProcessInputs(); // Only processes Tank Controls 
+        
+        
 
         //Run the Update() function from the parent (base) class
         base.Update();
+
+        if (Input.GetKeyDown(respawnKey)) // REMOVE LATER
+        {
+            GameManager.instance.RestartPlayer(this); // Restart player
+        }
 
     }
 
@@ -88,7 +97,11 @@ public class PlayerController : Controller
         {
             pawn.StopNoise();
         }
+
+
     }
+
+
 
     public void OnDestroy()
     {

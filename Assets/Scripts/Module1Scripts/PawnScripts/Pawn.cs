@@ -71,4 +71,7 @@ public abstract class Pawn : MonoBehaviour
     // Module 2: Make and stop noise functions created 
     public abstract void MakeNoise();
     public abstract void StopNoise();
+
+    public abstract void Die(Pawn soucre);
+
 }

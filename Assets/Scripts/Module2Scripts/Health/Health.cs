@@ -1,20 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.VisualScripting.Member;
 
 public class Health : MonoBehaviour
 {
     public float currentHealth;  // Variable that holds current health Float value
     public float maxHealth;  // Variable that holds maximum health Float value
 
+    //Module 3:
+    public bool isInvincible {  get; private set; } // private setter ensures that you can only change the value of isInvincible from within the script
+
     public GameObject explosionPrefab;
     private AudioSource explosionAudio;
     private ParticleSystem explosionParticles;
 
-    private Pawn tankPawn; // Refrence to the tank pawn script - inherits from Pawn script
+    private Pawn ownerPawn; // Refrence to the tank pawn script - inherits from Pawn script
 
     // Module 2: 
-    private bool IsDead;
+    protected bool IsDead;
 
     public Transform respawnCheckpoint; //Stores respawn position
 
@@ -25,7 +29,7 @@ public class Health : MonoBehaviour
         explosionAudio = explosionParticles.GetComponent<AudioSource>();
 
         explosionParticles.gameObject.SetActive(false);
-        tankPawn = GetComponent<Pawn>(); // Initialize the tankPawn variable for use
+        ownerPawn = GetComponent<Pawn>(); // Initialize the tankPawn variable for use
     }
     // Start is called before the first frame update
     void Start()
@@ -41,73 +45,130 @@ public class Health : MonoBehaviour
         
     }
 
-    public void TakeDamage(float amount, Pawn source) // Made virtual to override in SpecialTankHealth script
+    public void TakeDamage(float amount, Pawn source) // Source is who attacked; the gameObject is who got hit
     {
         currentHealth = currentHealth - amount;
-        Debug.Log(source.name + " did " + amount + " damage to " + gameObject.name);
-        Debug.Log("Current Health is: " + currentHealth);
-
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // the Mathf.Clamp keeps our currentHealth from going out of range ( below 0, or above maxHealth) 
 
-        if (currentHealth <= 0 && !IsDead)  // Checks for death when health is less than or = to zero
+        Debug.Log(source.name + " did " + amount + " damage to " + gameObject.name);
+        Debug.Log(gameObject.name + " Current Health is: " + currentHealth);
+
+        if (currentHealth <= 0) 
         {
-            Debug.Log(source + " died! ");
-            Die(source);
+            IsDead = true;
+            LoseLife(source);
+            
+
         }
-    }
 
-    public void Die(Pawn source)  // Could reduce lfe count here?
-    {
-        IsDead = true;
-        if (tankPawn.currentLives <= 0) // If tankPawn current lives are < or = to 0...
-        {
-            Destroy(gameObject); // destroy the Game Object that this component instance is on
-
-            explosionParticles.transform.position = transform.position;
-            explosionParticles.gameObject.SetActive(true);
-
-            explosionParticles.Play();
-
-            explosionAudio.Play();
-        }
         else
         {
-            Destroy(gameObject);
+            IsDead = false;
+        }
+    }
+
+
+
+    public void ExplosionEffects()
+    {
             explosionParticles.transform.position = transform.position;
             explosionParticles.gameObject.SetActive(true);
 
             explosionParticles.Play();
 
             explosionAudio.Play();
-            LoseLife(); // If lives are not equal to 0 on Death, we will do the same but LoseLife is run.
-            Respawn(); // Respawn player at transform !
-        }
-
     }
 
-    public void Respawn()
+    
+
+ 
+    public void LoseLife(Pawn source)
     {
-        if (tankPawn != null && respawnCheckpoint != null)
-        {
-            //Reset the tank Pawns position to the checkpoint position
-            tankPawn.transform.position = respawnCheckpoint.position;
+        ExplosionEffects();
+        //SetInvisible(); // Call to custom function
 
-            //Reset Health back to full
+        if (ownerPawn.currentLives > 0)
+        {
+            ownerPawn.currentLives--;  // Checks tankPawn script currentLives variable value and lowers it by one
+            Debug.Log("Lower life count by one, Current Lives: " + ownerPawn.currentLives + " | Owner of current lives: " + ownerPawn.name);
+
+            GameManager.instance.Respawn(gameObject.GetComponent<Controller>()); // Attached Controller for Respawn target
             currentHealth = maxHealth;
+            IsDead = false;
         }
+        
+        else
+        {
+            ownerPawn.Die(source);
+        }
+
+        // TODO: instantiate explosion, call new spawn point (from random generated spawns), wait 4 sconds before respawn, make GameObject invisible, after Respawn make GameObject visible again
+
     }
 
+    /*
     public void LoseLife()
     {
-        tankPawn.currentLives--;  // Checks tankPawn script currentLives variable value and lowers it by one
-        Debug.Log("Lower life count by one, Current Lives: " + tankPawn.currentLives);
+        ownerPawn.currentLives--;  // Checks tankPawn script currentLives variable value and lowers it by one
+        Debug.Log("Lower life count by one, Current Lives: " + ownerPawn.currentLives);
+
+        // TODO: instantiate explosion, call new spawn point (from random generated spawns), wait 4 sconds before respawn, make GameObject invisible, after Respawn make GameObject visible again
+        ExplosionEffects();
+        SetInvisible(); // Call to custom function
+        // Removed LoseLife
+        if (ownerPawn.currentLives <= 0) // If tankPawn current lives are < or = to 0... | Can add AITank life and respawn too??
+        {
+            //Destroy(gameObject, 1); // destroy the Game Object that this component instance is on after 1 second
+            ownerPawn.Die(ownerPawn);
+
+            // only through UI can you call the GameManager for respawn
+        }
+    }
+    */
+
+    /*
+    public void SetInvisible() // Anthing that needs to be turned off on Death
+    {
+        this.gameObject.GetComponent<MeshRenderer>().enabled = false;
+        this.gameObject.GetComponent<TankShooter>().enabled = false;
+        this.gameObject.GetComponent<Collider>().enabled = false; // Rigidbody is kinematic should be checked later...
     }
 
+    public void SetVisible() // Anthing that needs to be turned back on after respawn
+    {
+        this.gameObject.GetComponent<MeshRenderer>().enabled = true;
+        this.gameObject.GetComponent<TankShooter>().enabled = true;
+        this.gameObject.GetComponent<Collider>().enabled = true; // Rigidbody is kinematic should be checked later...
+    }
+
+    */
+
+
+    public void GainLife()
+    {
+        ownerPawn.currentLives++; // Will add one life; used for pickup - ExtraLifePickup!
+    }
+   
     public void Heal(float amount, Pawn source) 
     {
         currentHealth = currentHealth + amount;
         Debug.Log(source.name + "healed amount: " + amount + " to Target: " + gameObject.name);
 
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Keeps current health between 0 and maxHealth // Can add overhealing if wanted later on...
+    }
+
+    public void SetIsInvincible (bool invincible) // Tried to do this for invincibility Powerup/pickup
+    {
+        isInvincible = invincible;
+        if (isInvincible)
+        {
+            // Disable the Health component when invincible
+            this.enabled = false;
+        }
+        else
+        {
+            // Re-enable the Health component when NOT invincible
+            this.enabled = true;
+        }
     }
 }

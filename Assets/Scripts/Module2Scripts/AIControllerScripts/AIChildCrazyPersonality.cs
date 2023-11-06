@@ -7,13 +7,15 @@ public class AIChildCrazyPersonality : AIController
     // Start is called before the first frame update
     public override void Start()
     {
-        ChangeState(AIState.Patrol);
+        base.Start(); // Runs base class Start()
+        ChangeState(AIState.Guard);
     }
 
     // Update is called once per frame
     public override void Update()
     {
-        base.Update(); // will run process Inputs script
+        //base.Update(); // will run process Inputs script
+        ProcessInputs();
     }
 
     public override void ProcessInputs()
@@ -31,6 +33,10 @@ public class AIChildCrazyPersonality : AIController
                 {
                     base.ChangeState(AIState.Scan);
                 }
+                if (!base.IsCanHear(target))
+                {
+                    TargetNearestTank();
+                }
                 break;
             case AIState.Scan:
                 // Do work for Scan state:
@@ -45,11 +51,11 @@ public class AIChildCrazyPersonality : AIController
                 // Do work for Chase
                 DoChaseState();
                 // Check for transitions
-                if (IsDistanceLessThan(target, 10))
+                if (IsDistanceLessThan(target, 5))
                 {
                     base.ChangeState(AIState.Attack);
                 }
-                else
+                if (IsDistanceGreaterThan(target, 10))
                 {
                     base.ChangeState(AIState.Scan);
                 }
@@ -80,6 +86,10 @@ public class AIChildCrazyPersonality : AIController
                 // Do work for Unpredictable State
                 base.DoUnpredictableState();
                 // Check for transitions
+                if (IsDistanceGreaterThan(target, 10))
+                {
+                    base.ChangeState(AIState.Chase);
+                }
                 if (IsHasTimePassed(3))
                 {
                     base.ChangeState(AIState.Attack);
@@ -90,10 +100,10 @@ public class AIChildCrazyPersonality : AIController
     protected override void DoChaseState()  // In lessons it is called Seek State // Made virtual to override on AIChildCrazyPersonality script.
     {
         // Doing Chase State
-        TargetPlayerOne(); // Target Player one from Base class
+        //TargetPlayerOne(); // Target Player one from Base class
         Debug.Log("Chasing from Crazy AI Personality");
         Seek(target);
-        pawn.moveSpeed *= 1.5f; // Move speed up by 50%
+        pawn.moveSpeed *= 1.0f; // Move speed up by 25%
     }
 
 }

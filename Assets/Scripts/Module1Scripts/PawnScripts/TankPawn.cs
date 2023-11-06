@@ -6,10 +6,11 @@ using UnityEngine;
 // changed : Monobehavior to Pawn Class (Script I made)
 public class TankPawn : Pawn
 {
+    public bool IsSilent;
     // it will inherit our two speed variables. and fire rate
-    
 
-  //  private float nextShootTime; // Used this variable to set time delay between fireRate
+
+    //  private float nextShootTime; // Used this variable to set time delay between fireRate
 
     //public GameObject Bullet;  // Get rid of
     //public Transform Barrele; // Get rid of
@@ -29,7 +30,14 @@ public class TankPawn : Pawn
     // Update is called once per frame
     public override void Update()
     {
-        base.Start();
+        base.Update();
+
+        if ( IsSilent && noiseMaker.volumeDistance > 0)
+        {
+            noiseMaker.volumeDistance -= Time.deltaTime; // Gradual decrease of noise on Stop Moving / StopNoise
+            
+        }
+
         /*
         if (Time.time >= nextShootTime)
         {
@@ -110,7 +118,7 @@ public class TankPawn : Pawn
     // Module 2: implimenting inherited abstract member Pawn.Shoot()
     public override void Shoot()
     {
-        shooter.Shoot(shellPrefab, fireForce, damageDone, shellLifespan); // Refrences Parent's shooter class (Pawn)
+        shooter.Shoot(shellPrefab, fireForce, damageDone, shellLifespan); // Refrences Parent's shooter class (Pawn) and tankShooter
     }
 
     // Module 2: implimenting RotateTowards function
@@ -125,16 +133,29 @@ public class TankPawn : Pawn
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
     }
 
+
+    
+
     // Module 2: Implimenting Make/Stop noise functions to be used on AIController
     public override void MakeNoise()
     {
         if (noiseMaker != null)
         {
             noiseMaker.volumeDistance = noiseMakerVolume;
+            IsSilent = false;
         }
     }
     public override void StopNoise()
     {
-        noiseMaker.volumeDistance = 0;
+        //noiseMaker.volumeDistance = 0;
+        IsSilent = true;
     }
+
+    public override void Die(Pawn source) 
+    {
+        Destroy(gameObject, 2); // Destroys with a 2 second delay
+        Debug.Log(gameObject.name + " was killed by: " + source.name);
+    }
+
+
 }

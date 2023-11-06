@@ -42,12 +42,14 @@ public class AIController : Controller // Generic AIController Personality
         //currentState = AIState.Chase;  // Sets inital state to be "Chase" State || NOT USED ANYMORE
         //ChangeState(AIState.Chase); // set to chase just for testing | should be guard or Idle state
         //ChangeState(AIState.Patrol);
-        //ChangeState(AIState.Guard);
+        ChangeState(AIState.Guard);
         //ChangeState(AIState.Flee);
         //ChangeState(AIState.Unpredictable);
         // Run the parent (base) Start
         base.Start();
         startTime = Time.time; // set the startTime variable on start
+        tankShooterComponent = pawn.GetComponent<TankShooter>(); 
+        healthComponent = pawn.GetComponent<Health>();
     }
 
     // Update is called once per frame
@@ -70,24 +72,23 @@ public class AIController : Controller // Generic AIController Personality
             case AIState.Guard:
                 // Do work for Guard
                 DoGuardState();
+                TargetNearestTank();
+                //TargetPlayerOne();
                 // Check for transitions
-                if(IsDistanceLessThan(target, 10) && IsCanSee(target) && IsCanHear(target))
+                if(IsDistanceLessThan(target, 5) && IsCanSee(target))
                  {
                    ChangeState(AIState.Chase);
                  }
+                if(IsHasTimePassed(5))
+                {
+                    //ChangeState(AIState.Unpredictable);
+                }
                 break;
             case AIState.Chase:
                 // Do work for Chase
-                if(IsHasTarget())
-                {
                     DoChaseState();
-                }
-                else
-                {
-                    TargetPlayerOne(); // sets target to player one during runtime
-                }
                 //Check for transitions
-                if(IsDistanceLessThan(target, 7))
+                if(IsDistanceLessThan(target, 5))
                 {
                     ChangeState(AIState.Attack);
                 }
@@ -138,7 +139,7 @@ public class AIController : Controller // Generic AIController Personality
                 // Do work for Unpredictable
                 DoUnpredictableState();
                 // Check for transitions
-                if (IsHasTimePassed(5)) // If 5 seconds have passed .. 
+                if (IsHasTimePassed(2)) // If 2 seconds have passed .. 
                 {
                     ChangeState(AIState.Chase);
                 }
@@ -179,16 +180,17 @@ public class AIController : Controller // Generic AIController Personality
     protected void DoGuardState() 
     {
         // Doing Guard State
-        Debug.Log("Guarding");
+        //TargetNearestTank();
+        //Debug.Log("Guarding");
     }
 
     // Chase State
     protected virtual void DoChaseState()  // In lessons it is called Seek State // Made virtual to override on AIChildCrazyPersonality script.
     {
         // Doing Chase State
-        Debug.Log("Chasing");
+        //Debug.Log("Chasing");
         Seek(target);
-        TargetPlayerOne();
+        //TargetPlayerOne();
     }
 
     // Very basic Flee function | hard to manipulate
@@ -217,43 +219,42 @@ public class AIController : Controller // Generic AIController Personality
 
     protected void DoUnpredictableState()
     {
+        //TargetNearestTank();
+        if (pawn == null)
+        {
+            return; // just leave if no pawn
+        }
         // Rotate AI counter-clockwise using the rotationSpeed variable
-        //transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime);
-        pawn.transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime);
-        //pawn.RotateCounterClockWise;
+        pawn.transform.Rotate(rotationSpeed * Time.deltaTime * Vector3.up);
 
         // Fire bullets
-        pawn.fireRate = 0; // sets fire rate to 0 | umlimited shooting
-        tankShooterComponent.nextShootTime = 0; // sets fire rate to 0 | umlimited shooting
+        pawn.fireRate = 0.5f; // sets fire rate to 0 | umlimited shooting
+        
+        tankShooterComponent.nextShootTime = 1.0f; 
         Shoot();
         //TargetPlayerOne();
-        //TargetNearestTank();
+        
     }
 
     protected void DoScanState()
     {
-        TargetPlayerOne();
+        TargetNearestTank();
         // Rotate the pawn clockwise
         //pawn.RotateClockwise();
         pawn.transform.Rotate(rotationSpeed * Time.deltaTime * Vector3.up);
 
-        //Check if the AI can see the assigned target
-        if (IsCanSee(target))
-        {
-            ChangeState(AIState.Chase);
-        }
     }
 
     protected virtual void DoAggressiveState()
     {
-        TargetNearestTank();
-        TargetPlayerOne();
+        //TargetNearestTank();
+        //TargetPlayerOne();
 
         pawn.moveSpeed *= 1.5f; // 50% increase in movement speed
 
-        pawn.fireRate = 0; // Unlimited firing rate
+        pawn.fireRate = 0.8f; // Unlimited firing rate
 
-        tankShooterComponent.nextShootTime = 0; // sets fire rate to 0 | umlimited shooting
+        //tankShooterComponent.nextShootTime = 0; // sets fire rate to 0 | umlimited shooting
 
         Seek(target);  // Seek the player
 
@@ -297,8 +298,11 @@ public class AIController : Controller // Generic AIController Personality
         Seek(target);
         // Shoot
         Shoot();
+        pawn.fireRate = 1; // Unlimited firing rate
 
-        TargetNearestTank(); // Added this
+        tankShooterComponent.nextShootTime = 1; // sets fire rate to 0 | umlimited shooting
+
+        //TargetNearestTank(); // Added this
     }
 
     public void Shoot() // Define Shoot function
@@ -364,23 +368,48 @@ public class AIController : Controller // Generic AIController Personality
         Pawn[] allTanks = FindObjectsOfType<Pawn>(); // can be changed to tankPawn if wanting to be more specific
 
         //Assume the first tank is the closest tank
-        Pawn closestTank = allTanks[0];
-        float closestTankDistance = Vector3.Distance(pawn.transform.position, closestTank.transform.position);
+        //Pawn closestTank = allTanks[0];
+        //float closestTankDistance = Vector3.Distance(pawn.transform.position, closestTank.transform.position);
+
+        Pawn closestTank = null;
+        float closestTankDistance = float.MaxValue; // Initialize with a large value
+
 
         //Iterate through them one at a time
         foreach (Pawn tank in allTanks)
         {
             //If this one is closer than the closest
-            if (Vector3.Distance(pawn.transform.position, tank.transform.position) <= closestTankDistance)
+            /*if (Vector3.Distance(pawn.transform.position, tank.transform.position) <= closestTankDistance)
             {
                 // It is the closest tank
                 closestTank = tank;
                 closestTankDistance = Vector3.Distance(pawn.transform.position, closestTank.transform.position);
             }
+            */
+
+            // Skip the AI's own pawn (if it exists) by comparing GameObjects
+            if (tank.gameObject == pawn.gameObject)
+            {
+                continue;
+            }
+
+            // Calculate the distance to this tank
+            float distance = Vector3.Distance(pawn.transform.position, tank.transform.position);
+
+            // If this tank is closer than the closest one found so far...
+            if (distance < closestTankDistance)
+            {
+                closestTank = tank;
+                closestTankDistance = distance;
+            }
         }
 
-        //Target the closest Tank
-        target = closestTank.gameObject;
+        if (closestTank != null)
+        {
+            //Target the closest Tank
+            target = closestTank.gameObject;
+        }
+        
     }
 
     protected bool IsHasTarget() // Transition - can be used in other states
@@ -425,15 +454,37 @@ public class AIController : Controller // Generic AIController Personality
         // Find the vector from the agent to the target
         Vector3 agentToTargetVector = target.transform.position - pawn.transform.position;
 
+
         // Find the angle between the direction our agent is facing (forward in local space) and the vector to the target
         float angleToTarget = Vector3.Angle(agentToTargetVector, pawn.transform.forward);
-        Debug.Log("Angle To Target: " + angleToTarget);
+       // Debug.Log("Angle To Target: " + angleToTarget);
 
         // If angle is less than out field of view
         if (angleToTarget < fieldOfView)
         {
-            Debug.Log("In Field Of View!");
-            return true;
+            //Debug.Log("In Field Of View!");
+            // Calculate the direction from the AI to the target
+            Vector3 directionToTarget = target.transform.position - pawn.transform.position;
+
+            // Create a ray from the AI's position in the direction of target
+            Ray ray = new Ray(pawn.transform.position, directionToTarget);
+
+            // Set the max distance for the ray (adjust this value based on game's scale)
+            float maxRayDistance = 100f;
+
+            // Create a layer mask to filter which objects the ray should hit (Uses Player Layer)
+            LayerMask layerMask = LayerMask.GetMask("Players");
+
+            RaycastHit hitInfo;
+
+            // Perform the raycast
+            if (Physics.Raycast(ray, out hitInfo, maxRayDistance, layerMask))
+            {
+                // A player object was hit, so the AI can see the target
+                return true;
+            }
+            // No player objects were hit, so the AI cannot see the target
+            return false;
         }
         else
         {

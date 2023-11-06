@@ -134,13 +134,16 @@ MonoBehaviour:
   turnSpeed: 360
   fireRate: 1
   shellPrefab: {fileID: 6097959932433946262, guid: 82b38950a4083ef46a687402639fcb74, type: 3}
-  fireForce: 1000
+  fireForce: 800
   damageDone: 10
   shellLifespan: 3
   noiseMakerVolume: 3
   mover: {fileID: 0}
   shooter: {fileID: 0}
   noiseMaker: {fileID: 0}
+  maxLives: 3
+  currentLives: 0
+  IsSilent: 0
 --- !u!135 &4863455873490135460
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -216,6 +219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firepointTransform: {fileID: 3825583615528058749}
+  nextShootTime: 0
 --- !u!114 &-2895812581514222937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231,6 +235,7 @@ MonoBehaviour:
   currentHealth: 100
   maxHealth: 100
   explosionPrefab: {fileID: 151086, guid: eec398a72a89aea41a4df33789cd845c, type: 3}
+  respawnCheckpoint: {fileID: 0}
 --- !u!4 &584914550782881526 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5e35227fe70621548903bd7968d1c936, type: 3}

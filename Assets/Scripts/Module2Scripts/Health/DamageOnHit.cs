@@ -8,12 +8,12 @@ public class DamageOnHit : MonoBehaviour
 
     public float damageDone = 10f; // store the amount of damage it does
 
-    public Pawn owner; // store the pawn that is responsible for the damage done
+    [HideInInspector]public Pawn owner; // store the pawn that is responsible for the damage done
 
     public LayerMask tankMask; //added to layer mask
     public ParticleSystem explosionParticles;
     public AudioSource explosionAudio;
-    public float maxDamage = 90f;
+    public float maxDamage = 50f;
     public float explosionForce = 900f;
     public float maxLifeTime = 2f;
     public float explosionRadius = 3f;
@@ -28,13 +28,13 @@ public class DamageOnHit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("On update: " + damageDone);
+        Debug.Log("On update damage done: " + damageDone);
     }
 
     public void OnTriggerEnter(Collider other)
     {
         // Get the Health component from the Game Object that has the Collider we are overlapping
-        Health otherHealth = other.gameObject.GetComponent<Health>();
+        //Health otherHealth = other.gameObject.GetComponent<Health>();
 
         // Find all tanks in an area around the shell and gamage them
         Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, tankMask); // checks colliders within an overlap sphere
@@ -42,26 +42,30 @@ public class DamageOnHit : MonoBehaviour
 
         for (int i = 0; i < colliders.Length; i++)
         {
-           // if (colliders != Self. )
-            Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody>();
-
-            if (!targetRigidbody)
+            if (colliders[i].GetComponent<Pawn>() != owner ) //only enter loop if collider is not the one who fired it
             {
-                continue;
+                Debug.Log("The game object DOH is on: " + colliders[i].name);
+                Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody>();
+
+                if (!targetRigidbody)
+                {
+                    continue;
+                }
+
+                targetRigidbody.AddExplosionForce(explosionForce, transform.position, explosionRadius);
+
+                Health targetHealth = targetRigidbody.GetComponent<Health>();
+
+                if (!targetHealth)
+                {
+                    continue;
+                }
+
+                float damageAOE = CalculateAOEDamage(targetRigidbody.position);
+
+                targetHealth.TakeDamage(damageAOE, owner); // Owner should be who fired bullet
+                //Debug.Log("Owner for collider DOH: " + owner.name + "TargetHealth is: " + targetHealth.name); 
             }
-
-            targetRigidbody.AddExplosionForce(explosionForce, transform.position, explosionRadius);
-
-            Health targetHealth = targetRigidbody.GetComponent<Health>();
-
-            if (!targetHealth)
-            {
-                continue;
-            }
-
-            float damageAOE = CalculateAOEDamage(targetRigidbody.position);
-
-            targetHealth.TakeDamage(damageAOE, owner);
         }
 
         /*
@@ -82,7 +86,7 @@ public class DamageOnHit : MonoBehaviour
         explosionAudio.Play();
 
         Destroy(explosionParticles.gameObject, explosionParticles.main.duration);
-        Destroy(gameObject);
+        Destroy(gameObject, explosionAudio.clip.length);
     }
 
     public float getDamageDone()  // Created a getter function to easily access DamageDone attribute
