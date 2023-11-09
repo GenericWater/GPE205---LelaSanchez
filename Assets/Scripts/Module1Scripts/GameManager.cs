@@ -33,40 +33,23 @@ public class GameManager : MonoBehaviour
 
     public MapGenerator mapGenerator; // Call to mapGenerator should change so GameManager does not depend on mapGenertaor script
     public CameraFollow cameraFollow; // Refrence to CameraFollow script
+ 
 
     // Module 4 enum State list
-    //public enum GameState { TitleScreen, MainMenu, OptionsScreen, CreditsScreen, Gameplay, GameOverScreen}
-    //public GameState currentState; // Var to call enum from list
+    public enum GameState { TitleScreen, MainMenu, OptionsScreen, CreditsScreen, Gameplay, PauseScreen, GameOverScreen}
+    public GameState currentState; // Var to call enum from list
 
-    // Module 4: Game States
-    //public GameObject TitleScreenStateObject;
-    //public GameObject MainMenuStateObject;
-    //public GameObject OptionsScreenStateObject;
-    //public GameObject CreditsScreenStateObject;
-    //public GameObject GameplayStateObject;
-    //public GameObject GameOverScreenStateObject;
-     
-
-    private void Start()
-    {
-        /* only will spawn 4
-        for (int i = 0; i < aiTanks.Length; i++)
-        {
-            SpawnAI(i);
-        }
-        */
-        //SpawnAI(0);
-        // Temp code - for now we spawn player as soon as the GameManager starts
-        SpawnPlayer(); // calling function I just made
-
-        if (mapGenerator != null) // If a MapGenerator is present, run PopulateAiSpawn()
-        {
-            mapGenerator.PopulateAiSpawn();
-        }
-        // Module 4: 
-        //ChangeState(GameState.TitleScreen); // Will start the player on the Title Screen
-
-    }
+    // Added myself | list to refrence the public game objects and initalized it 
+    [HideInInspector]public List<GameObject> gameStatesList = new List<GameObject>(); // expose the gameStatesList in the Unity Inspector, your designers can directly add the GameObjects to the list within the Unity Editor. // IMPORTANT: MIGHT NOT NEED!
+                                                                     // The Start method would only be necessary if you want to add some initial setup or logic in your script, which doesn't involve populating the list itself.
+                                                                     // Module 4: Game States
+    public GameObject TitleScreenStateObject;
+    public GameObject MainMenuStateObject;
+    public GameObject OptionsScreenStateObject;
+    public GameObject CreditsScreenStateObject;
+    public GameObject GameplayStateObject;
+    public GameObject PauseScreenStateObject; // Added Pause screen functionality
+    public GameObject GameOverScreenStateObject;
 
 
     //Awake is called when the gme object is first created - before even Start can run!
@@ -83,9 +66,99 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    private void Start()
+    {
+        /* only will spawn 4
+        for (int i = 0; i < aiTanks.Length; i++)
+        {
+            SpawnAI(i);
+        }
+        */
+        //SpawnAI(0);
+        // Temp code - for now we spawn player as soon as the GameManager starts
+
+        // Added myself | if all states are NOT null (Empy in Inspector)...
+        if (TitleScreenStateObject && MainMenuStateObject && OptionsScreenStateObject && CreditsScreenStateObject && GameplayStateObject && PauseScreenStateObject && GameOverScreenStateObject != null)
+        {
+            // Added myself |  add public GameObject in code, so designers don't worry about it for States to gameStatesList
+            gameStatesList.Add(TitleScreenStateObject);
+            gameStatesList.Add(MainMenuStateObject);
+            gameStatesList.Add(OptionsScreenStateObject);
+            gameStatesList.Add(CreditsScreenStateObject);
+            gameStatesList.Add(GameplayStateObject);
+            gameStatesList.Add(PauseScreenStateObject);
+            gameStatesList.Add(GameOverScreenStateObject);
+        }
+
+
+        // Module 4: 
+        DeactivateAllStates(); // First Deactivate all states
+        //ChangeState(GameState.TitleScreen); // Will start the player on the Title Screen
+
+        /*
+        if (tankPawnPrefab != null)
+        {
+            ChangeState(GameState.TitleScreen); // Will start the player on the Title Screen
+        }
+        */
+        if (IsGameplayStateActive() == true) // DID NOT SPAWN PLAYER EITHER
+        {
+            // Added myself | if all states are NOT null (Empy in Inspector)...
+            if (TitleScreenStateObject && MainMenuStateObject && OptionsScreenStateObject && CreditsScreenStateObject && GameplayStateObject && PauseScreenStateObject && GameOverScreenStateObject != null)
+            {
+
+
+                if (IsGameplayStateActive() == true) // TODO: If gameStatesList != null ...
+                {
+                    SpawnPlayer(); // calling function I just made | Spawn player
+
+                    if (mapGenerator != null) // If a MapGenerator is present, run PopulateAiSpawn()
+                    {
+                        mapGenerator.PopulateAiSpawn(); //Uncomment to generate map with MapGenerator
+                    }
+                }
+
+
+            }
+        }
+
+    }
+
+    /*
+    // Trued to Spawn player and AI... DID NOT WORK
+    private void OnEnable()
+    {
+        // Added myself | if all states are NOT null (Empy in Inspector)...
+        if (TitleScreenStateObject && MainMenuStateObject && OptionsScreenStateObject && CreditsScreenStateObject && GameplayStateObject && PauseScreenStateObject && GameOverScreenStateObject != null)
+        {
+
+
+            if (IsGameplayStateActive() == true) // TODO: If gameStatesList != null ...
+            {
+                SpawnPlayer(); // calling function I just made | Spawn player
+
+                if (mapGenerator != null) // If a MapGenerator is present, run PopulateAiSpawn()
+                {
+                    mapGenerator.PopulateAiSpawn(); //Uncomment to generate map with MapGenerator
+                }
+            }
+
+
+        }
+    }
+
+
+
+
+    public void Update() // Will spawn player on update with AI but will get a lot of errors
+    {
+
+    }
+
+    */
     // To use our Singleton, we need to create a new object. We will want to name this object GameManager
 
-    public void SpawnPlayer()
+    public void SpawnPlayer() // Get's a Random Spawn Point for Player
     {
         // Mod 3
         playerSpawnTransform = GetPawnSpawnPoint().transform; // Set transform of Player Spawn
@@ -108,8 +181,14 @@ public class GameManager : MonoBehaviour
         //Module 3: Add Powerup component to Pawn on spawn
         newPawnObj.AddComponent<PowerupManager>();
 
+        // Test Initialization for Damage done
+        newPawn.damageDone = 10.0f; // Might need to change to edit 
+        newPawn.maxLives = 3; // Set the number of max lives
+
         // Hook them up!
         newController.pawn = newPawn;
+        newPawn.controller = newController; // Module 4: ensures pawn is connected to controller
+
         
         // Set camera to target Spawned tank Pawn!
         cameraFollow.SetTarget(newPawn.transform);
@@ -229,7 +308,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    /*
+    
 
     // Module 4: Helper function to Deactivate all Game States
     private void DeactivateAllStates()
@@ -239,6 +318,7 @@ public class GameManager : MonoBehaviour
         OptionsScreenStateObject.SetActive(false);
         CreditsScreenStateObject.SetActive(false);
         GameplayStateObject.SetActive(false);
+        PauseScreenStateObject.SetActive(false); // Ensure Pause is set to false
         GameOverScreenStateObject.SetActive(false);
     }
 
@@ -298,7 +378,19 @@ public class GameManager : MonoBehaviour
         //TODO: What needs to happen for Gameplay screen
     }
 
-    public void ActivateGameoverScreen()
+    public void ActivatePauseScreen()
+    {
+        // First we deactivate all states
+        DeactivateAllStates();
+
+        // Activate the Pause Screen
+        PauseScreenStateObject.SetActive(true);
+
+        // TODO: What needs to happen for Pause Screen
+
+    }
+
+    public void ActivateGameOverScreen()
     {
         // First we deactivate all states
         DeactivateAllStates();
@@ -307,7 +399,7 @@ public class GameManager : MonoBehaviour
         GameOverScreenStateObject.SetActive(true);
     }
 
-    // Helper functions
+    // Helper function to change states
     public void ChangeState(GameState newState) // Will change the GameState to whatever parameter we enter from the enum.
     {
         // Change the current state
@@ -315,5 +407,61 @@ public class GameManager : MonoBehaviour
 
     }
 
+    protected bool IsAnyGameStateActive()
+    {
+        foreach (GameObject gameState in gameStatesList)
+        {
+            if (gameState != null && gameState.activeInHierarchy) // will check if game state is currently active in Hierarchy in Editor
+            {
+                return true; // Return true if any game state is active
+            }
+        }
+
+        return false;
+    }
+
+    protected bool IsGameplayStateActive()
+    {
+        if (GameplayStateObject != null && GameplayStateObject.activeInHierarchy)
+        {
+            return true; // Return true if the GameplayState is active && not null
+        }
+
+        return false;
+    }
+
+    /*
+    // If gameplay state or any state is set to true... helper function
+
+    // TODO: protected bool to check if gameStatesList (EXAMPLE BUT ANY STATE) GameOverScreenStateObject.SetActive(true); | Will probable use if( OR)
+    protected bool IsGameStateSetTrue()
+    {
+        if(SetAllStatesToActive() == true)
+
+        return; // Need return statement for a bool helper function
+    }
+
+    // Added myself | Sets all states to Active
+    protected void SetAllStatesToActive() // 7 object States!
+    {
+        foreach (GameObject gameState in gameStatesList)
+        {
+            if (gameState != null) // Error prevention
+            {
+                gameState.SetActive(true);
+            }
+        }
+
+        //TitleScreenStateObject.SetActive(true);
+        //MainMenuStateObject.SetActive(true);
+        //OptionsScreenStateObject.SetActive(true);
+        //CreditsScreenStateObject.SetActive(true);
+        //GameplayStateObject.SetActive(true);
+        //PauseScreenStateObject.SetActive(true);
+        //GameOverScreenStateObject.SetActive(true);
+
+    }
     */
+
+
 }

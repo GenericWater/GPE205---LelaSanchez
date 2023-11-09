@@ -14,7 +14,8 @@ public class TankPawn : Pawn
 
     //public GameObject Bullet;  // Get rid of
     //public Transform Barrele; // Get rid of
-
+    //public ScorePowerup scorePowerup;
+    public float scoreToAddForDeath = 100.0f;
 
     // Start is called before the first frame update
     public override void Start()
@@ -155,6 +156,9 @@ public class TankPawn : Pawn
     {
         Destroy(gameObject, 2); // Destroys with a 2 second delay
         Debug.Log(gameObject.name + " was killed by: " + source.name);
+
+        //Module 4: on death will add to score
+        source.controller.AddToScore(scoreToAddForDeath); // Add to score based on amount defined in inspector
     }
 
 

@@ -46,10 +46,7 @@ public class PlayerController : Controller
         //Run the Update() function from the parent (base) class
         base.Update();
 
-        if (Input.GetKeyDown(respawnKey)) // REMOVE LATER
-        {
-            GameManager.instance.RestartPlayer(this); // Restart player
-        }
+
 
     }
 
@@ -98,7 +95,11 @@ public class PlayerController : Controller
             pawn.StopNoise();
         }
 
-
+        // Module 4: Respawn Key added
+        if (Input.GetKeyDown(respawnKey)) // TODO: Set to only allow respawn when lives are 0
+        {
+            GameManager.instance.RestartPlayer(this); // Restart player
+        }
     }
 
 

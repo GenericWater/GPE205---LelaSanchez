@@ -142,7 +142,7 @@ public class MapGenerator : MonoBehaviour
             if (room == null) continue;
             // For each room in grid, run the GameManager's SpawnAI() using UnityEngine.Random within a range (list of possible tanks to choose from defined on GameManager inspector) ...
             // .. to a list held on Room script called aiSpawnPoints(holds all gameObjects with component AISpawnPoint attached | list) using UE Random.Range to pick a random aiSpawnPoint
-            // .. based on the total count of spawn points; since its an empty gameObject, its .transform since its a location we need
+            // .. based on the total count of spawn points; since its an empty gameObject, its .transform since its a transform we need
             AIController newAiTank = GameManager.instance.SpawnAI(UnityEngine.Random.Range(0,GameManager.instance.aiTanks.Length) , room.aiSpawnPoints[UnityEngine.Random.Range(0, room.aiSpawnPoints.Count)].transform);
 
             // way point list held on Room script to auto generate with room prefabs

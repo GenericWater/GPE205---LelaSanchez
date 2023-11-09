@@ -67,6 +67,11 @@ public class AIController : Controller // Generic AIController Personality
     {
         Debug.Log("Making Decisions from base AIController");
 
+        if (pawn == null) // If pawn does not exist, destroy gameObject(Controller)
+        {
+            Destroy(gameObject); 
+        }
+
         switch (currentState)  // Add case to switch current state
         {
             case AIState.Guard:

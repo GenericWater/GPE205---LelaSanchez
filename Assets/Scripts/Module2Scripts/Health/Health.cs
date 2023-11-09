@@ -57,8 +57,7 @@ public class Health : MonoBehaviour
         {
             IsDead = true;
             LoseLife(source);
-            
-
+           
         }
 
         else
@@ -99,7 +98,7 @@ public class Health : MonoBehaviour
         
         else
         {
-            ownerPawn.Die(source);
+            ownerPawn.Die(source); // Die() defined on pawn script - TankPawn
         }
 
         // TODO: instantiate explosion, call new spawn point (from random generated spawns), wait 4 sconds before respawn, make GameObject invisible, after Respawn make GameObject visible again

@@ -39,6 +39,9 @@ public abstract class Pawn : MonoBehaviour
 
     public int currentLives; // Holds current number of lives 
 
+    // Module 4: Score Pickup additions
+    public Controller controller; // Holds the controller to call AddToScore() // Pawn is cconnected to controller in GameManager script so this is not called on Start
+
     // Start is called before the first frame update
     public virtual void Start() // Virtual allows to be called on sub-scripts
     {
