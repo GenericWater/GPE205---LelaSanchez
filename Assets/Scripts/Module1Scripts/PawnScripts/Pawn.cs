@@ -10,7 +10,7 @@ public abstract class Pawn : MonoBehaviour
     public float turnSpeed;
 
     // Variable for Rate of Fire
-    public float fireRate = 1.0f;
+    public float fireRate;
 
     // Module 2: Variable for our shell prefab
     public GameObject shellPrefab;
