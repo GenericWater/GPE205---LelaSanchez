@@ -23,7 +23,8 @@ public class GameManager : MonoBehaviour
 
     public List<PlayerController> players; // List created on Player Controller Script
     //public List<AIController> aiEntities; // Not using, tried to set target for AI Controllers using GameManager
-    public List<PawnSpawnPoint> pawnSpawnPoints = new List<PawnSpawnPoint>(); // Create and instanite list to use during code
+    public List<PawnSpawnPoint> pawnSpawnPoints = new List<PawnSpawnPoint>(); // Create and inst
+                                                                              // anite list to use during code
 
     //public List<AISpawnPoint> aiSpawnPoints = new List<AISpawnPoint>(); //public List<AISpawnPoint> AISpawnPoints;
 
@@ -42,7 +43,7 @@ public class GameManager : MonoBehaviour
     // Added myself | list to refrence the public game objects and initalized it 
     [HideInInspector]public List<GameObject> gameStatesList = new List<GameObject>(); // expose the gameStatesList in the Unity Inspector, your designers can directly add the GameObjects to the list within the Unity Editor. // IMPORTANT: MIGHT NOT NEED!
                                                                      // The Start method would only be necessary if you want to add some initial setup or logic in your script, which doesn't involve populating the list itself.
-                                                                     // Module 4: Game States
+    // Module 4: Game States
     public GameObject TitleScreenStateObject;
     public GameObject MainMenuStateObject;
     public GameObject OptionsScreenStateObject;
@@ -77,7 +78,8 @@ public class GameManager : MonoBehaviour
         //SpawnAI(0);
         // Temp code - for now we spawn player as soon as the GameManager starts
 
-        // Added myself | if all states are NOT null (Empy in Inspector)...
+        // Added myself | if all states are NOT null (Empy in Inspector)... *Not really incorporated into my code.*
+         
         if (TitleScreenStateObject && MainMenuStateObject && OptionsScreenStateObject && CreditsScreenStateObject && GameplayStateObject && PauseScreenStateObject && GameOverScreenStateObject != null)
         {
             // Added myself |  add public GameObject in code, so designers don't worry about it for States to gameStatesList
@@ -90,6 +92,10 @@ public class GameManager : MonoBehaviour
             gameStatesList.Add(GameOverScreenStateObject);
         }
 
+        if (IsGameplayStateActive()) // Will SPAWN PLAYER!!!!!!!!!!!!!!!!!!!!!
+        {
+            ActivateGameplayScreen();
+        }
 
         // Module 4: 
         DeactivateAllStates(); // First Deactivate all states
@@ -101,26 +107,7 @@ public class GameManager : MonoBehaviour
             ChangeState(GameState.TitleScreen); // Will start the player on the Title Screen
         }
         */
-        if (IsGameplayStateActive() == true) // DID NOT SPAWN PLAYER EITHER
-        {
-            // Added myself | if all states are NOT null (Empy in Inspector)...
-            if (TitleScreenStateObject && MainMenuStateObject && OptionsScreenStateObject && CreditsScreenStateObject && GameplayStateObject && PauseScreenStateObject && GameOverScreenStateObject != null)
-            {
 
-
-                if (IsGameplayStateActive() == true) // TODO: If gameStatesList != null ...
-                {
-                    SpawnPlayer(); // calling function I just made | Spawn player
-
-                    if (mapGenerator != null) // If a MapGenerator is present, run PopulateAiSpawn()
-                    {
-                        mapGenerator.PopulateAiSpawn(); //Uncomment to generate map with MapGenerator
-                    }
-                }
-
-
-            }
-        }
 
     }
 
@@ -376,6 +363,26 @@ public class GameManager : MonoBehaviour
         GameplayStateObject.SetActive(true);
 
         //TODO: What needs to happen for Gameplay screen
+        if (IsGameplayStateActive() == true) // DID NOT SPAWN PLAYER EITHER
+        {
+            // Added myself | if all states are NOT null (Empy in Inspector)...
+            if (TitleScreenStateObject && MainMenuStateObject && OptionsScreenStateObject && CreditsScreenStateObject && GameplayStateObject && PauseScreenStateObject && GameOverScreenStateObject != null)
+            {
+
+
+                if (IsGameplayStateActive() == true) // TODO: If gameStatesList != null ...
+                {
+                    SpawnPlayer(); // calling function I just made | Spawn player
+
+                    if (mapGenerator != null) // If a MapGenerator is present, run PopulateAiSpawn()
+                    {
+                        mapGenerator.PopulateAiSpawn(); //Uncomment to generate map with MapGenerator
+                    }
+                }
+
+
+            }
+        }
     }
 
     public void ActivatePauseScreen()

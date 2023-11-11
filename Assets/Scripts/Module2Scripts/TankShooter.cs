@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TankShooter : Shooter
+public class TankShooter : Shooter // fireRate is set in pawn
 {
     public Transform firepointTransform; // Public transform that will be linked to the firePoint on Tank in game
 
@@ -18,6 +18,7 @@ public class TankShooter : Shooter
     // Start is called before the first frame update
     public override void Start()
     {
+        /*
         //float shotsPerSecond;
         fireRate = gameObject.GetComponent<Pawn>().fireRate; // Gets component from Pawn Script
         float secondsPerShot; // We will convert to shots per second
@@ -35,6 +36,7 @@ public class TankShooter : Shooter
         timerDelay = secondsPerShot;
 
         nextShootTime = Time.time + timerDelay;
+        */
 
     }
 
@@ -46,8 +48,8 @@ public class TankShooter : Shooter
 
     public override void Shoot(GameObject shellPrefab, float fireForce, float damageDone, float lifeSpan)
     {
-        if (Time.time >= nextShootTime)
-        {
+        //if (Time.time >= nextShootTime)
+        //{
 
 
             //Instantiate our projectile
@@ -80,8 +82,8 @@ public class TankShooter : Shooter
 
             // Destroy it after a set time
             Destroy(newShell, lifeSpan);
-            nextShootTime = Time.time + timerDelay; // Add to time
-        }
+            //nextShootTime = Time.time + timerDelay; // Add to time
+        //}
         //return;
 
     }

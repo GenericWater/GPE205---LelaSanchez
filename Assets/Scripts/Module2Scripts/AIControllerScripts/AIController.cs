@@ -233,7 +233,7 @@ public class AIController : Controller // Generic AIController Personality
         pawn.transform.Rotate(rotationSpeed * Time.deltaTime * Vector3.up);
 
         // Fire bullets
-        pawn.fireRate = 0.5f; // sets fire rate to 0 | umlimited shooting
+        //pawn.fireRate = 0.5f; // sets fire rate to 0 | umlimited shooting
         
         tankShooterComponent.nextShootTime = 1.0f; 
         Shoot();

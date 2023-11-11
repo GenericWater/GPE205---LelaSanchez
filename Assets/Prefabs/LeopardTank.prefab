@@ -123,7 +123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2
   turnSpeed: 360
-  fireRate: 1
+  fireRate: 0.5
   shellPrefab: {fileID: 6097959932433946262, guid: 82b38950a4083ef46a687402639fcb74, type: 3}
   fireForce: 800
   damageDone: 10
@@ -134,7 +134,11 @@ MonoBehaviour:
   noiseMaker: {fileID: 0}
   maxLives: 1
   currentLives: 0
+  controller: {fileID: 0}
   IsSilent: 0
+  nextEventTime: 0
+  timerDelay: 0
+  scoreToAddForDeath: 100
 --- !u!54 &3922427266989370845
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -7,6 +7,9 @@ using UnityEngine;
 public class TankPawn : Pawn
 {
     public bool IsSilent;
+
+    public float nextEventTime;
+    public float timerDelay;
     // it will inherit our two speed variables. and fire rate
 
 
@@ -20,12 +23,26 @@ public class TankPawn : Pawn
     // Start is called before the first frame update
     public override void Start()
     {
-        base.Start();
+        base.Start(); // doesn't really matter
         // nextShootTime = Time.time + fireRate;
 
         // Module 2 - loading shooter on start
         //shooter = GetComponent<Shooter>();
-        currentLives = maxLives;
+        currentLives = maxLives; // ensures lives are set to default
+
+        float secondsPerShot;
+        if (fireRate <= 0)
+        {
+            secondsPerShot = Mathf.Infinity;
+        }
+        else
+        {
+            secondsPerShot = 1 / fireRate; // Inverts to Shots per Second to make it easier for designers (# of seconds between shots)
+        }
+        timerDelay = secondsPerShot;
+        nextEventTime = Time.time + timerDelay;
+
+        
     }
 
     // Update is called once per frame
@@ -119,7 +136,12 @@ public class TankPawn : Pawn
     // Module 2: implimenting inherited abstract member Pawn.Shoot()
     public override void Shoot()
     {
-        shooter.Shoot(shellPrefab, fireForce, damageDone, shellLifespan); // Refrences Parent's shooter class (Pawn) and tankShooter
+        if (Time.time >= nextEventTime)
+        {
+            shooter.Shoot(shellPrefab, fireForce, damageDone, shellLifespan); // Refrences Parent's shooter class (Pawn) and tankShooter
+            nextEventTime = Time.time + timerDelay; // Only after we shoot should we add the timerDelay
+        }
+        
     }
 
     // Module 2: implimenting RotateTowards function
@@ -127,6 +149,7 @@ public class TankPawn : Pawn
     {
         // Find the vector to our target
         Vector3 vectorToTarget = targetPosition - transform.position;  // transform.position is Enemy Pawn's current position
+
         // Find the rotation to look down taht vector
         Quaternion targetRotation = Quaternion.LookRotation(vectorToTarget, Vector3.up);
 
