@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 200132752752715778}
   - component: {fileID: 691684524346032597}
+  - component: {fileID: 7819337480962007979}
+  - component: {fileID: 5434730440809103645}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -46,10 +48,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSpawnTransform: {fileID: 0}
   AiSpawnTransform: {fileID: 0}
+  IsMultiplayerGameMode: 1
   playerControllerPrefab: {fileID: 3442163337679825139, guid: 5961b9f5ae6a2cc4d822d4b39b811f5a, type: 3}
   tankPawnPrefab: {fileID: 240335665985664076, guid: 992cec8da65cbe8418b7e9267d33acf2, type: 3}
   aiTankPrefab: {fileID: 315428120301620862, guid: d4c9ce18a327d424eb39b7fb25d13b5f, type: 3}
   aiTankControllerPrefab: {fileID: 0}
+  playerTwoControllerPrefab: {fileID: 3442163337679825139, guid: a24bc08df34a9e04a90e36bd46d5e2e9, type: 3}
+  cameraPlayer1: {fileID: 0}
+  cameraPlayer2: {fileID: 0}
   players: []
   pawnSpawnPoints: []
   aiTanks:
@@ -63,3 +69,49 @@ MonoBehaviour:
     AiTankPrefab: {fileID: 315428120301620862, guid: d4c9ce18a327d424eb39b7fb25d13b5f, type: 3}
   mapGenerator: {fileID: 0}
   cameraFollow: {fileID: 0}
+  currentState: 0
+  gameStatesList:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  TitleScreenStateObject: {fileID: 0}
+  MainMenuStateObject: {fileID: 0}
+  OptionsScreenStateObject: {fileID: 0}
+  CreditsScreenStateObject: {fileID: 0}
+  GameplayStateObject: {fileID: 0}
+  PauseScreenStateObject: {fileID: 0}
+  GameOverScreenStateObject: {fileID: 0}
+--- !u!114 &7819337480962007979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1483887113281164881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f950033b63f836647a1368b837bedbe9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridPrefabs:
+  - {fileID: 121816, guid: 41d4243be8ad3a5409422171976de7ff, type: 3}
+  - {fileID: 8699302708407693471, guid: 8c31858d9375b1848a76bf37ecc18e01, type: 3}
+  - {fileID: 8752771936285622759, guid: a33ea10af3ff73844a7c644bae28ba6a, type: 3}
+  rows: 3
+  cols: 3
+  roomWidth: 50
+  roomHeight: 50
+  mapSeed: 0
+  isMapOfTheDay: 1
+--- !u!81 &5434730440809103645
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1483887113281164881}
+  m_Enabled: 1

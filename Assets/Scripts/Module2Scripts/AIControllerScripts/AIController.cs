@@ -65,7 +65,7 @@ public class AIController : Controller // Generic AIController Personality
     // Going to be responsible for making AI decisions
     public override void ProcessInputs()
     {
-        Debug.Log("Making Decisions from base AIController");
+        //Debug.Log("Making Decisions from base AIController");
 
         if (pawn == null) // If pawn does not exist, destroy gameObject(Controller)
         {

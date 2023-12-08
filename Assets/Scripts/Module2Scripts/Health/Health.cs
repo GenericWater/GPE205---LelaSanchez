@@ -20,7 +20,7 @@ public class Health : MonoBehaviour
     // Module 2: 
     protected bool IsDead;
 
-    public Transform respawnCheckpoint; //Stores respawn position
+    //public Transform respawnCheckpoint; //Stores respawn position
 
 
     private void Awake()
@@ -50,19 +50,14 @@ public class Health : MonoBehaviour
         currentHealth = currentHealth - amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // the Mathf.Clamp keeps our currentHealth from going out of range ( below 0, or above maxHealth) 
 
-        Debug.Log(source.name + " did " + amount + " damage to " + gameObject.name);
-        Debug.Log(gameObject.name + " Current Health is: " + currentHealth);
+       //Debug.Log(source.name + " did " + amount + " damage to " + gameObject.name);
+        //Debug.Log(gameObject.name + " Current Health is: " + currentHealth);
 
         if (currentHealth <= 0) 
         {
             IsDead = true;
             LoseLife(source);
            
-        }
-
-        else
-        {
-            IsDead = false;
         }
     }
 
@@ -86,22 +81,30 @@ public class Health : MonoBehaviour
         ExplosionEffects();
         //SetInvisible(); // Call to custom function
 
-        if (ownerPawn.currentLives > 0)
+        if (gameObject.CompareTag("Player")) 
         {
+            Debug.Log("Owner pawn lost life" + ownerPawn.name);
             ownerPawn.currentLives--;  // Checks tankPawn script currentLives variable value and lowers it by one
-            Debug.Log("Lower life count by one, Current Lives: " + ownerPawn.currentLives + " | Owner of current lives: " + ownerPawn.name);
-
-            GameManager.instance.Respawn(gameObject.GetComponent<Controller>()); // Attached Controller for Respawn target
             currentHealth = maxHealth;
+
+            //Debug.Log("Lower life count by one, Current Lives: " + ownerPawn.currentLives + " | Owner of current lives: " + ownerPawn.name);
+
+            if (ownerPawn.currentLives > 0)
+            {
+                GameManager.instance.Respawn(ownerPawn.controller, ownerPawn); // Attached Controller for Respawn target
+            }
+
+            if (ownerPawn.currentLives <= 0)
+            {
+                ownerPawn.Die(source); // Die() defined on pawn script - TankPawn
+            }
+
             IsDead = false;
-        }
-        
-        else
+        }else // ensures no weird execution errors
         {
             ownerPawn.Die(source); // Die() defined on pawn script - TankPawn
         }
 
-        // TODO: instantiate explosion, call new spawn point (from random generated spawns), wait 4 sconds before respawn, make GameObject invisible, after Respawn make GameObject visible again
 
     }
 
@@ -151,7 +154,7 @@ public class Health : MonoBehaviour
     public void Heal(float amount, Pawn source) 
     {
         currentHealth = currentHealth + amount;
-        Debug.Log(source.name + "healed amount: " + amount + " to Target: " + gameObject.name);
+        //Debug.Log(source.name + "healed amount: " + amount + " to Target: " + gameObject.name);
 
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Keeps current health between 0 and maxHealth // Can add overhealing if wanted later on...
     }

@@ -87,7 +87,7 @@ public class TankPawn : Pawn
         }
         else
         {
-            Debug.LogWarning("Warning: No Mover in TankPawn.MoveForward()!");
+            //Debug.LogWarning("Warning: No Mover in TankPawn.MoveForward()!");
         }
         
     }
@@ -101,7 +101,7 @@ public class TankPawn : Pawn
         }
         else
         {
-            Debug.LogWarning("Warning: No Mover in TankPawn.MoveBackward()!");
+            //Debug.LogWarning("Warning: No Mover in TankPawn.MoveBackward()!");
         }
         
     }
@@ -115,7 +115,7 @@ public class TankPawn : Pawn
         }
         else
         {
-            Debug.LogWarning("Warning: No Mover in TankPawn.RotateClockwise()!");
+            //Debug.LogWarning("Warning: No Mover in TankPawn.RotateClockwise()!");
         }
         
     }
@@ -129,7 +129,7 @@ public class TankPawn : Pawn
         }
         else
         {
-            Debug.LogWarning("Warning: No Mover in TankPawn.RotateCounterClockwise()!");
+            //Debug.LogWarning("Warning: No Mover in TankPawn.RotateCounterClockwise()!");
         }
     }
 
@@ -177,11 +177,14 @@ public class TankPawn : Pawn
 
     public override void Die(Pawn source) 
     {
-        Destroy(gameObject, 2); // Destroys with a 2 second delay
-        Debug.Log(gameObject.name + " was killed by: " + source.name);
-
         //Module 4: on death will add to score
         source.controller.AddToScore(scoreToAddForDeath); // Add to score based on amount defined in inspector
+        Debug.Log(gameObject.name + " was killed by: " + source.name);
+
+        Destroy(controller); // If pawns die, controller will be destroyed
+
+        Destroy(gameObject); // Destroys 
+        
     }
 
 

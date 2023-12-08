@@ -48,10 +48,6 @@ public class TankShooter : Shooter // fireRate is set in pawn
 
     public override void Shoot(GameObject shellPrefab, float fireForce, float damageDone, float lifeSpan)
     {
-        //if (Time.time >= nextShootTime)
-        //{
-
-
             //Instantiate our projectile
             GameObject newShell = Instantiate(shellPrefab, firepointTransform.position, firepointTransform.rotation) as GameObject;
 
@@ -77,13 +73,12 @@ public class TankShooter : Shooter // fireRate is set in pawn
             if (rb != null)
             {
                 // ... AddForce to make it move forward
-                rb.AddForce(firepointTransform.forward * fireForce);
+                rb.AddForce(firepointTransform.forward * fireForce); // fire force is speed of bullet
             }
 
             // Destroy it after a set time
             Destroy(newShell, lifeSpan);
-            //nextShootTime = Time.time + timerDelay; // Add to time
-        //}
+
         //return;
 
     }

@@ -20,7 +20,7 @@ public class AIChildCrazyPersonality : AIController
 
     public override void ProcessInputs()
     {
-        Debug.Log("Making Decisions from Crazy Personality");
+        //Debug.Log("Making Decisions from Crazy Personality");
 
         switch (currentState)  // Add case to switch current state
         {
@@ -101,7 +101,7 @@ public class AIChildCrazyPersonality : AIController
     {
         // Doing Chase State
         //TargetPlayerOne(); // Target Player one from Base class
-        Debug.Log("Chasing from Crazy AI Personality");
+        //Debug.Log("Chasing from Crazy AI Personality");
         Seek(target);
         pawn.moveSpeed *= 1.0f; // Move speed up by 25%
     }

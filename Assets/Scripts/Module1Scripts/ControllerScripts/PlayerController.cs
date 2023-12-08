@@ -14,7 +14,7 @@ public class PlayerController : Controller
     //Module 2 - shootKey added!
     public KeyCode shootKey;
 
-    public KeyCode respawnKey;
+
 
     // Start is called before the first frame update
     public override void Start()
@@ -95,11 +95,7 @@ public class PlayerController : Controller
             pawn.StopNoise();
         }
 
-        // Module 4: Respawn Key added
-        if (Input.GetKeyDown(respawnKey)) // TODO: Set to only allow respawn when lives are 0
-        {
-            GameManager.instance.RestartPlayer(this); // Restart player
-        }
+
     }
 
 

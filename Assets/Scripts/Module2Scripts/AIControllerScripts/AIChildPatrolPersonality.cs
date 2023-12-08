@@ -20,7 +20,7 @@ public class AIChildPatrolPersonality : AIController
 
     public override void ProcessInputs()
     {
-        Debug.Log("Making Decisoions from Patrol Personality");
+        //Debug.Log("Making Decisoions from Patrol Personality");
 
         switch (currentState)  // Add case to switch current state
         {

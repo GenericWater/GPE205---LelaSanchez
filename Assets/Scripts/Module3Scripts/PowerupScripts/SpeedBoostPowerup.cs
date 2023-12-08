@@ -10,10 +10,12 @@ public class SpeedBoostPowerup : Powerup
     public override void Apply(PowerupManager target)
     {
         Pawn pawn = target.GetComponent<Pawn>();
-        if (pawn != null)
+        if (pawn != null && !pawn.CompareTag("AIEnemy"))
         {
-            pawn.moveSpeed = pawn.moveSpeed * speedBoostAmount;
+            pawn.moveSpeed = pawn.moveSpeed / (1 / speedBoostAmount); // divide by 1 to get a percentage value out of 100.
         }
+
+        
     }
 
     public override void Remove(PowerupManager target)
@@ -21,7 +23,7 @@ public class SpeedBoostPowerup : Powerup
         Pawn pawn = target.GetComponent<Pawn>();
         if (pawn != null)
         {
-            pawn.moveSpeed = pawn.moveSpeed / speedBoostAmount; // division to remove multiplier of speedBoostAmount
+            pawn.moveSpeed = pawn.moveSpeed * (1 / speedBoostAmount); // division to remove multiplier of speedBoostAmount // percentage as well
         }
     }
 }

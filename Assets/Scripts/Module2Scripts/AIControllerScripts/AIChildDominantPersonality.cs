@@ -20,7 +20,7 @@ public class AIChildDominantPersonality : AIController
 
     public override void ProcessInputs()
     {
-        Debug.Log("Making Decisions from the Dominant Personality!");
+        //Debug.Log("Making Decisions from the Dominant Personality!");
 
         switch (currentState)  // Add case to switch current state
         {

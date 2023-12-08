@@ -8,18 +8,26 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
 
-    public static GameManager instance;
+    public static GameManager instance; // Singleton pattern holding instance of gameManager to ensure only one exists.
 
-    public Transform playerSpawnTransform;
+    public Transform playerSpawnTransform; // Filled out in code not inspector
 
     public Transform AiSpawnTransform;
 
+    public bool IsMultiplayerGameMode; // TODO: Will check if IsMultilayer game mode == true; if true, will run different function for initalizing multiplayer game.
 
     // Prefabs
     public GameObject playerControllerPrefab;
     public GameObject tankPawnPrefab;
     public GameObject aiTankPrefab;
     public GameObject aiTankControllerPrefab;
+    // Module 4: Player 2 controller prefab
+    public GameObject playerTwoControllerPrefab; // Used to define key bindings before game starts for player 2
+
+
+    // Module 4: Camera initalization for multiplayer
+    public GameObject cameraPlayer1;
+    public GameObject cameraPlayer2;
 
     public List<PlayerController> players; // List created on Player Controller Script
     //public List<AIController> aiEntities; // Not using, tried to set target for AI Controllers using GameManager
@@ -33,7 +41,7 @@ public class GameManager : MonoBehaviour
     private List<Room> rooms; // List of rooms
 
     public MapGenerator mapGenerator; // Call to mapGenerator should change so GameManager does not depend on mapGenertaor script
-    public CameraFollow cameraFollow; // Refrence to CameraFollow script
+    public CameraFollow cameraFollow; // Refrence to CameraFollow script  ** DO I NEED THIS?? 11/16/2023
  
 
     // Module 4 enum State list
@@ -92,14 +100,17 @@ public class GameManager : MonoBehaviour
             gameStatesList.Add(GameOverScreenStateObject);
         }
 
-        if (IsGameplayStateActive()) // Will SPAWN PLAYER!!!!!!!!!!!!!!!!!!!!!
-        {
-            ActivateGameplayScreen();
-        }
+
 
         // Module 4: 
         DeactivateAllStates(); // First Deactivate all states
         //ChangeState(GameState.TitleScreen); // Will start the player on the Title Screen
+        ActivateTitleScreen();
+
+        if (IsGameplayStateActive()) // Will SPAWN PLAYER!!!!!!!!!!!!!!!!!!!!!
+        {
+            ActivateGameplayScreen();
+        }
 
         /*
         if (tankPawnPrefab != null)
@@ -145,6 +156,104 @@ public class GameManager : MonoBehaviour
     */
     // To use our Singleton, we need to create a new object. We will want to name this object GameManager
 
+    public void SpawnPlayerOne()
+    {
+        // Mod 3
+        playerSpawnTransform = GetPawnSpawnPoint().transform; // Set transform of Player Spawn
+
+        // Spawn the Player Controller at (0, 0, 0) with no rotation
+        GameObject newPlayerObj = Instantiate(playerControllerPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+
+        // Spawn the Pawn and connect it to the Controller
+        GameObject newPawnObj = Instantiate(tankPawnPrefab, playerSpawnTransform.position, playerSpawnTransform.rotation) as GameObject;
+
+        // Get the Player Controller component and Pawn component.
+        Controller newController = newPlayerObj.GetComponent<Controller>();
+        Pawn newPawn = newPawnObj.GetComponent<Pawn>();
+
+        // Module 2: add and set noiseMaker component on Pawn
+        newPawnObj.AddComponent<NoiseMaker>();
+        newPawn.noiseMaker = newPawnObj.GetComponent<NoiseMaker>();
+        newPawn.noiseMakerVolume = 3;
+
+        //Module 3: Add Powerup component to Pawn on spawn
+        newPawnObj.AddComponent<PowerupManager>();
+
+        // Test Initialization for Damage done
+        newPawn.damageDone = 10.0f; // Might need to change to edit 
+        newPawn.maxLives = 3; // Set the number of max lives
+
+        // Hook them up!
+        newController.pawn = newPawn;
+        newPawn.controller = newController; // Module 4: ensures pawn is connected to controller
+
+
+        // Did myself | Set camera to target Spawned tank Pawn! 
+        //cameraFollow.SetTarget(newPawn.transform);
+
+        //GameObject camera = FindAnyObjectByType<Camera>().gameObject; // Find all camera Game Objects
+
+        //camera.transform.parent = newPawnObj.transform; // Sets Pawn as parent for camera to follow transform
+        cameraPlayer1.transform.parent = newPawnObj.transform; // Sets Pawn as parent for camera to follow transform
+
+        cameraPlayer1.GetComponent<CameraFollow>().SetTarget(newPawn.transform);
+
+        // Did myself | Set camera to target Spawned tank Pawn! using component attached to camera 
+        //cameraFollow.SetTarget(newPawn.transform);
+    }
+
+    public void SpawnPlayerTwo()
+    {
+        //Debug.Log("Spawn Player Two");
+        // Mod 3
+        playerSpawnTransform = GetPawnSpawnPoint().transform; // Set transform of Player Spawn
+
+        // Spawn the Player Controller at (0, 0, 0) with no rotation
+        GameObject newPlayerObj = Instantiate(playerTwoControllerPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+
+        // Spawn the Pawn and connect it to the Controller
+        GameObject newPawnObj = Instantiate(tankPawnPrefab, playerSpawnTransform.position, playerSpawnTransform.rotation) as GameObject;
+
+        // Get the Player Controller component and Pawn component.
+        Controller newController = newPlayerObj.GetComponent<Controller>();
+        Pawn newPawn = newPawnObj.GetComponent<Pawn>();
+
+        // Module 2: add and set noiseMaker component on Pawn
+        newPawnObj.AddComponent<NoiseMaker>();
+        newPawn.noiseMaker = newPawnObj.GetComponent<NoiseMaker>();
+        newPawn.noiseMakerVolume = 3;
+
+        //Module 3: Add Powerup component to Pawn on spawn
+        newPawnObj.AddComponent<PowerupManager>();
+
+        // Test Initialization for Damage done
+        newPawn.damageDone = 10.0f; // Might need to change to edit 
+        newPawn.maxLives = 3; // Set the number of max lives
+
+        // Hook them up!
+        newController.pawn = newPawn;
+        newPawn.controller = newController; // Module 4: ensures pawn is connected to controller
+
+
+        // Did myself | Set camera to target Spawned tank Pawn! 
+        //cameraFollow.SetTarget(newPawn.transform);
+
+        //GameObject camera = FindAnyObjectByType<Camera>().gameObject; // Find all camera Game Objects
+
+        //camera.transform.parent = newPawnObj.transform; // Sets Pawn as parent for camera to follow transform
+        cameraPlayer2.transform.parent = newPawnObj.transform; // Sets Pawn as parent for camera to follow transform
+
+        cameraPlayer2.GetComponent<CameraFollow>().SetTarget(newPawn.transform);
+
+        // Did myself | Set camera to target Spawned tank Pawn! 
+        //cameraFollow.SetTarget(newPawn.transform);
+
+        // Modify key bindings for controller on Player 2
+
+
+    }
+
+
     public void SpawnPlayer() // Get's a Random Spawn Point for Player
     {
         // Mod 3
@@ -177,8 +286,12 @@ public class GameManager : MonoBehaviour
         newPawn.controller = newController; // Module 4: ensures pawn is connected to controller
 
         
-        // Set camera to target Spawned tank Pawn!
+        // Did myself | Set camera to target Spawned tank Pawn! 
         cameraFollow.SetTarget(newPawn.transform);
+
+        GameObject camera = FindAnyObjectByType<Camera>().gameObject; // Find all camera Game Objects
+
+        camera.transform.parent = newPawnObj.transform; // Sets Pawn as parent for camera to follow transform
     }
 
     public AIController SpawnAI(int aiNumber, Transform AiSpawnTransform) // What AI they want to use and where to spawn it
@@ -273,27 +386,29 @@ public class GameManager : MonoBehaviour
     */
 
     // Respawn
-    public void Respawn(Controller tank) // Can be used with AI or Player Tank
+    public void Respawn(Controller tank, Pawn pawn) // Can be used with AI or Player Tank
     {
+        Debug.Log("Controller respawn is " + tank.name);
+        /*
         if (tank.GetType() == typeof(AIController)) // If type AIController
         {
             Destroy(tank.gameObject);
         }
-
-        else // If it is not AI, it should be our Player
+        */
+        if (tank.pawn != null)
         {
-            if (tank.pawn != null && tank.pawn.currentLives > 0 )
-            {
-                Transform spawnTransform = tank.pawn.GetComponent<GameObject>().transform;
-                
-                spawnTransform = GetPawnSpawnPoint().transform; // Set transform of Player Spawn
+            Transform spawnTransform = GetPawnSpawnPoint().transform; // Set transform of Player Spawn
+            pawn.gameObject.transform.position = spawnTransform.position;
 
-                tank.transform.position = Vector3.zero; // 0s out
-                tank.transform.rotation = Quaternion.identity;
+            tank.transform.position = spawnTransform.position; //Vector3.zero; // 0s out
+            tank.transform.rotation = spawnTransform.rotation; //Quaternion.identity;
 
+            //cameraPlayer1.transform.parent = pawn.gameObject.transform;
                 
-            }
         }
+        Debug.Log("new tank respawn position" + tank.transform.position);
+        return;
+        
     }
     
 
@@ -359,19 +474,37 @@ public class GameManager : MonoBehaviour
         // First we deactivate all states
         DeactivateAllStates();
 
+        mapGenerator.GenerateMap(); // build map
+
         // Activate the Gameplay screen
         GameplayStateObject.SetActive(true);
+
+        mapGenerator.enabled = true;
 
         //TODO: What needs to happen for Gameplay screen
         if (IsGameplayStateActive() == true) // DID NOT SPAWN PLAYER EITHER
         {
             // Added myself | if all states are NOT null (Empy in Inspector)...
-            if (TitleScreenStateObject && MainMenuStateObject && OptionsScreenStateObject && CreditsScreenStateObject && GameplayStateObject && PauseScreenStateObject && GameOverScreenStateObject != null)
-            {
+            //if (TitleScreenStateObject && MainMenuStateObject && OptionsScreenStateObject && CreditsScreenStateObject && GameplayStateObject && PauseScreenStateObject && GameOverScreenStateObject != null)
+            //{
 
 
-                if (IsGameplayStateActive() == true) // TODO: If gameStatesList != null ...
+                //if (IsGameplayStateActive() == true) // TODO: If gameStatesList != null ...
+                if (IsGameplayStateActive() == true && IsMultiplayerGameMode == true)
                 {
+                    Debug.Log("Multiplayer mode is true");
+                    SpawnPlayerOne();
+                    SpawnPlayerTwo();
+                    if (mapGenerator != null) // If a MapGenerator is present, run PopulateAiSpawn()
+                    {
+                        mapGenerator.PopulateAiSpawn(); //Uncomment to generate map with MapGenerator
+                    }
+                }
+
+                else if (IsGameplayStateActive() == true && IsMultiplayerGameMode == false)
+                {
+                    //mapGenerator.enabled = true;
+
                     SpawnPlayer(); // calling function I just made | Spawn player
 
                     if (mapGenerator != null) // If a MapGenerator is present, run PopulateAiSpawn()
@@ -380,9 +513,13 @@ public class GameManager : MonoBehaviour
                     }
                 }
 
+                //TODO: Check if lives are <= 0 , if so, ActivateGameOverScreen
 
-            }
+
+            //}
         }
+
+
     }
 
     public void ActivatePauseScreen()
@@ -406,13 +543,20 @@ public class GameManager : MonoBehaviour
         GameOverScreenStateObject.SetActive(true);
     }
 
-    // Helper function to change states
-    public void ChangeState(GameState newState) // Will change the GameState to whatever parameter we enter from the enum.
+    public void QuitGame() // Will close out of game on press/Call
     {
-        // Change the current state
-        currentState = newState;
-
+        Application.Quit();
+        Debug.Log("Quit Game!"); // Will not show quitting in editor but will function for a released version
     }
+
+
+    // Helper function to change states // NOT REALLY USED / DID NOT WORK
+    //public void ChangeState(GameState newState) // Will change the GameState to whatever parameter we enter from the enum.
+    //{
+        // Change the current state
+        //currentState = newState;
+
+    //}
 
     protected bool IsAnyGameStateActive()
     {
@@ -427,7 +571,7 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    protected bool IsGameplayStateActive()
+    public bool IsGameplayStateActive()
     {
         if (GameplayStateObject != null && GameplayStateObject.activeInHierarchy)
         {

@@ -13,8 +13,8 @@ public class DamageOnHit : MonoBehaviour
     public LayerMask tankMask; //added to layer mask
     public ParticleSystem explosionParticles;
     public AudioSource explosionAudio;
-    public float maxDamage = 50f;
-    public float explosionForce = 900f;
+    //public float maxDamage = 50f;
+    public float explosionForce = 500f;
     public float maxLifeTime = 2f;
     public float explosionRadius = 3f;
 
@@ -28,7 +28,7 @@ public class DamageOnHit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("On update damage done: " + damageDone);
+        //Debug.Log("On update damage done: " + damageDone);
     }
 
     public void OnTriggerEnter(Collider other)
@@ -44,7 +44,7 @@ public class DamageOnHit : MonoBehaviour
         {
             if (colliders[i].GetComponent<Pawn>() != owner ) //only enter loop if collider is not the one who fired it
             {
-                Debug.Log("The game object DOH is on: " + colliders[i].name);
+                //Debug.Log("The game object DOH is on: " + colliders[i].name);
                 Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody>();
 
                 if (!targetRigidbody)
@@ -108,9 +108,11 @@ public class DamageOnHit : MonoBehaviour
 
         float relativeDistance = (explosionRadius - explosionDistance) / explosionRadius;  // 1 for relativeDistance would mean center - full impact | trails off damage amount near end of Radius
 
-        float damage = relativeDistance * maxDamage;
+        float damage = relativeDistance * damageDone; // changed from maxDamage
 
-        damage = Mathf.Max(0f, damage); // if negative sets to zero otherwise keep as is.
+        //damage = Mathf.Max(0f, damage); // if negative sets to zero otherwise keep as is.
+
+        damage = Mathf.Abs(damage); // Only will return absolute values! (+)
 
         return damage;
     }

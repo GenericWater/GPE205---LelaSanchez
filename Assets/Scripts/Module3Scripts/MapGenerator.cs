@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
+//using UnityEngine.UIElements;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -14,15 +16,10 @@ public class MapGenerator : MonoBehaviour
     public bool isMapOfTheDay; // Can base mapSeed on current day and time
     private Room[,] grid; // 2-D array of room - accesses room script
 
+    public InputField mapSeedInputField;
 
-    public void Awake()
-    {
-        // Auto generate map 
-        if (grid == null) // if grid doesn't exist
-        {
-            GenerateMap(); // Make one!
-        }
-    }
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +39,18 @@ public class MapGenerator : MonoBehaviour
             GenerateMap();
        
     } */
+
+
+    // Tried to Set the Seed using UI Input from Input Field
+    public void UpdateMapSeedFromUIInputField()
+    {
+        //mapSeed = mapSeedInputField;
+    }
+
+    public void GenerateMapOfTheDaySeed()
+    {
+            mapSeed = DateToInt(DateTime.Now.Date);
+    }
 
     // Return a random room from our gridPrefabs array
     public GameObject RandomRoomPrefab()

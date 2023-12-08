@@ -181,5 +181,5 @@ MonoBehaviour:
   powerup:
     duration: 2
     isPermanent: 0
-    speedBoostAmount: 4
+    speedBoostAmount: 10
   rotationSpeed: 30
